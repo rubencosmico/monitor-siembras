@@ -46,7 +46,7 @@ const Store = {
     generateCSV(originalData, auditedData) {
         // Enriquecer originalData con auditedData
         const enrichedData = originalData.map((row, index) => {
-            const seedId = \`seed_\${index}\`; // Asumimos un ID basado en índice si no hay uno único
+            const seedId = `seed_${index}`; // Asumimos un ID basado en índice si no hay uno único
             const audit = auditedData[seedId];
             if (audit) {
                 return {
