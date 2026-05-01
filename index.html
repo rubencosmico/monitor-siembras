@@ -89,17 +89,43 @@
             color: #ffffff;
         }
         /* Custom markers */
+        .custom-user-icon-wrapper {
+            background: none;
+            border: none;
+        }
         .user-marker {
+            width: 16px;
+            height: 16px;
             background: #2196F3;
             border: 3px solid white;
             border-radius: 50%;
             box-shadow: 0 0 15px rgba(33, 150, 243, 0.8);
+            position: absolute;
+            top: 22px;
+            left: 22px;
+            z-index: 2;
             animation: pulse 2s infinite;
+        }
+        .user-direction {
+            position: absolute;
+            width: 0; 
+            height: 0; 
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 40px solid rgba(33, 150, 243, 0.5);
+            top: -10px;
+            left: 15px;
+            z-index: 1;
+            display: none;
         }
         @keyframes pulse {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7); }
             70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(33, 150, 243, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
+        }
+        .btn-location.inactive {
+            background: #607d8b;
+            box-shadow: 0 4px 15px rgba(96, 125, 139, 0.4);
         }
         #gps-status {
             position: absolute;
@@ -189,10 +215,57 @@
         // Geolocalización en tiempo real
         const gpsDot = document.getElementById('gps-dot');
         const gpsText = document.getElementById('gps-text');
+        let isTracking = true;
+        let compassInitialized = false;
 
         function updateGpsStatus(status, message) {
             gpsDot.className = 'status-dot ' + status;
             gpsText.innerText = message;
+        }
+
+        // Dejar de seguir si el usuario mueve el mapa manualmente
+        map.on('dragstart', () => {
+            isTracking = false;
+            document.getElementById('btnLocation').classList.add('inactive');
+        });
+
+        function initCompass() {
+            if (compassInitialized) return;
+
+            const handleOrientation = (e) => {
+                let heading = null;
+                if (e.webkitCompassHeading) {
+                    heading = e.webkitCompassHeading;
+                } else if (e.absolute && e.alpha !== null) {
+                    heading = 360 - e.alpha;
+                }
+
+                if (heading !== null) {
+                    const rotContainer = document.getElementById('user-rotation-container');
+                    const dirElement = document.getElementById('user-direction');
+                    if (rotContainer) {
+                        rotContainer.style.transform = `rotate(${heading}deg)`;
+                    }
+                    if (dirElement && dirElement.style.display !== 'block') {
+                        dirElement.style.display = 'block';
+                    }
+                }
+            };
+
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                            compassInitialized = true;
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                window.addEventListener('deviceorientationabsolute', handleOrientation);
+                window.addEventListener('deviceorientation', handleOrientation);
+                compassInitialized = true;
+            }
         }
 
         function startTracking() {
@@ -214,17 +287,28 @@
 
                         if (!userMarker) {
                             const userIcon = L.divIcon({
-                                className: 'user-marker',
-                                iconSize: [16, 16],
-                                iconAnchor: [8, 8]
+                                className: 'custom-user-icon-wrapper',
+                                html: `
+                                    <div id="user-rotation-container" style="width: 60px; height: 60px; position: relative; transition: transform 0.1s ease-out;">
+                                        <div class="user-direction" id="user-direction"></div>
+                                        <div class="user-marker"></div>
+                                    </div>
+                                `,
+                                iconSize: [60, 60],
+                                iconAnchor: [30, 30]
                             });
                             userMarker = L.marker(userLatLng, { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
                             userCircle = L.circle(userLatLng, { radius: accuracy, color: '#2196F3', weight: 1, fillColor: '#2196F3', fillOpacity: 0.2 }).addTo(map);
-                            map.setView(userLatLng, 18);
+                            if (isTracking) {
+                                map.setView(userLatLng, 18);
+                            }
                         } else {
                             userMarker.setLatLng(userLatLng);
                             userCircle.setLatLng(userLatLng);
                             userCircle.setRadius(accuracy);
+                            if (isTracking) {
+                                map.setView(userLatLng, map.getZoom());
+                            }
                         }
                     },
                     (error) => {
@@ -250,11 +334,14 @@
         }
 
         document.getElementById('btnLocation').addEventListener('click', () => {
+            isTracking = true;
+            document.getElementById('btnLocation').classList.remove('inactive');
             if (userMarker) {
-                map.setView(userMarker.getLatLng(), 19);
+                map.setView(userMarker.getLatLng(), map.getZoom() < 18 ? 18 : map.getZoom());
             } else {
                 startTracking();
             }
+            initCompass();
         });
 
         // Iniciar rastreo al cargar
