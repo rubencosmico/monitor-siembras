@@ -47,6 +47,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnCamera = document.getElementById('btn-camera');
     const cameraInput = document.getElementById('camera-input');
     const btnExport = document.getElementById('btnExport');
+    
+    // Filtros UI
+    const btnFilter = document.getElementById('btnFilter');
+    const filterModal = document.getElementById('filter-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const btnApplyFilters = document.getElementById('btn-apply-filters');
+    const filterEspecie = document.getElementById('filter-especie');
+    const filterEquipo = document.getElementById('filter-equipo');
+    const filterEstado = document.getElementById('filter-estado');
+    const sheetDetails = document.getElementById('sheet-details');
 
     function updateGpsStatus(status, message) {
         gpsDot.className = 'status-dot ' + status;
@@ -175,6 +185,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     function openBottomSheet(seedId, rowData, existingAudit) {
         selectedSeedId = seedId;
         sheetTitle.innerText = `${rowData['Especie']} - ${rowData['Micrositio']}`;
+        
+        sheetDetails.innerHTML = `
+            <div class="detail-item"><strong>Equipo</strong> <span>${rowData['Equipo'] || '-'}</span></div>
+            <div class="detail-item"><strong>Orientación</strong> <span>${rowData['Orientación'] || '-'}</span></div>
+            <div class="detail-item"><strong>Sem/Hoyo</strong> <span>${rowData['Semillas/Hoyo'] || '-'}</span></div>
+            <div class="detail-item"><strong>Protector</strong> <span>${rowData['Protector'] || '-'}</span></div>
+            <div class="detail-item"><strong>Sustrato</strong> <span>${rowData['Sustrato'] || '-'}</span></div>
+            <div class="detail-item full-width"><strong>Notas Originales</strong> <span>${rowData['Notas'] || '-'}</span></div>
+        `;
+
         bottomSheet.classList.add('open');
         
         // Reset inputs
@@ -286,6 +306,60 @@ document.addEventListener('DOMContentLoaded', async () => {
         reader.readAsDataURL(file);
     });
 
+    // Render Markers Logic
+    async function renderMarkers() {
+        markersLayer.clearLayers();
+        const auditedData = await Store.getAllAuditedSeeds();
+        
+        const fEspecie = filterEspecie.value;
+        const fEquipo = filterEquipo.value;
+        const fEstado = filterEstado.value;
+
+        originalCSVData.forEach((row, index) => {
+            const seedId = `seed_${index}`;
+            const audit = auditedData[seedId];
+            const status = audit && audit.status ? audit.status : 'pending';
+
+            // Apply filters
+            if (fEspecie && row['Especie'] !== fEspecie) return;
+            if (fEquipo && row['Equipo'] !== fEquipo) return;
+            if (fEstado && status !== fEstado) return;
+
+            const lat = parseFloat(row['Lat']);
+            const lng = parseFloat(row['Lng']);
+            if (isNaN(lat) || isNaN(lng)) return;
+
+            const statusClass = `seed-icon-${status}`;
+            const color = audit && audit.status ? `var(--status-${audit.status})` : '#9e9e9e';
+
+            const icon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div class="${statusClass}" style="background-color:${color};width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 0 5px rgba(0,0,0,0.5);"></div>`,
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            });
+
+            const marker = L.marker([lat, lng], { icon: icon, seedId: seedId });
+            marker.on('click', () => {
+                openBottomSheet(seedId, row, audit);
+            });
+            
+            markersLayer.addLayer(marker);
+        });
+
+        if (markersLayer.getLayers().length > 0) {
+            map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
+        }
+    }
+
+    // Filter Events
+    if(btnFilter) btnFilter.addEventListener('click', () => filterModal.classList.add('open'));
+    if(btnCloseModal) btnCloseModal.addEventListener('click', () => filterModal.classList.remove('open'));
+    if(btnApplyFilters) btnApplyFilters.addEventListener('click', async () => {
+        filterModal.classList.remove('open');
+        await renderMarkers();
+    });
+
     // CSV Loading
     document.getElementById('csvFileInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
@@ -295,38 +369,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             header: true,
             skipEmptyLines: true,
             complete: async function(results) {
-                markersLayer.clearLayers();
                 originalCSVData = results.data;
-                const auditedData = await Store.getAllAuditedSeeds();
                 
-                originalCSVData.forEach((row, index) => {
-                    const lat = parseFloat(row['Lat']);
-                    const lng = parseFloat(row['Lng']);
-                    if (isNaN(lat) || isNaN(lng)) return;
-
-                    const seedId = `seed_${index}`;
-                    const audit = auditedData[seedId];
-                    const statusClass = audit && audit.status ? `seed-icon-${audit.status}` : 'seed-icon-pending';
-                    const color = audit && audit.status ? `var(--status-${audit.status})` : '#9e9e9e';
-
-                    const icon = L.divIcon({
-                        className: 'custom-div-icon',
-                        html: `<div class="${statusClass}" style="background-color:${color};width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 0 5px rgba(0,0,0,0.5);"></div>`,
-                        iconSize: [16, 16],
-                        iconAnchor: [8, 8]
-                    });
-
-                    const marker = L.marker([lat, lng], { icon: icon, seedId: seedId });
-                    marker.on('click', () => {
-                        openBottomSheet(seedId, row, audit);
-                    });
-                    
-                    markersLayer.addLayer(marker);
+                // Populate filters
+                const especies = new Set();
+                const equipos = new Set();
+                originalCSVData.forEach(row => {
+                    if (row['Especie']) especies.add(row['Especie']);
+                    if (row['Equipo']) equipos.add(row['Equipo']);
                 });
 
-                if (markersLayer.getLayers().length > 0) {
-                    map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
-                }
+                filterEspecie.innerHTML = '<option value="">Todas</option>' + 
+                    [...especies].sort().map(e => `<option value="${e}">${e}</option>`).join('');
+                filterEquipo.innerHTML = '<option value="">Todos</option>' + 
+                    [...equipos].sort().map(e => `<option value="${e}">${e}</option>`).join('');
+
+                await renderMarkers();
             }
         });
     });

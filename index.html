@@ -47,6 +47,10 @@
             Centrar
         </button>
 
+        <button class="btn btn-filter" id="btnFilter" style="background:#673ab7;" title="Filtrar Mapa">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+        </button>
+
         <button class="btn" id="btnExport" style="background:#ff9800;" title="Exportar CSV Auditado">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         </button>
@@ -57,6 +61,10 @@
         <div class="sheet-header">
             <h3 id="sheet-title">Detalle Semilla</h3>
             <button class="close-btn" id="btn-close-sheet">&times;</button>
+        </div>
+        
+        <div id="sheet-details" class="sheet-details">
+            <!-- Detalles inyectados por JS -->
         </div>
         
         <div class="status-buttons">
@@ -75,6 +83,36 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
             </button>
             <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none;" />
+        </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div id="filter-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:#4caf50;">Filtros de Mapa</h3>
+            <button class="close-btn" id="btn-close-modal" style="position: absolute; top: 15px; right: 20px;">&times;</button>
+            
+            <div class="filter-group">
+                <label>Especie</label>
+                <select id="filter-especie"><option value="">Todas</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Equipo</label>
+                <select id="filter-equipo"><option value="">Todos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Estado Auditoría</label>
+                <select id="filter-estado">
+                    <option value="">Todos</option>
+                    <option value="pending">Pendiente</option>
+                    <option value="supervive">Supervive</option>
+                    <option value="germinada">Germinada</option>
+                    <option value="danada">Dañada</option>
+                    <option value="fallida">Fallida</option>
+                </select>
+            </div>
+            
+            <button class="btn" id="btn-apply-filters" style="width: 100%; margin-top: 20px; justify-content: center;">Aplicar Filtros</button>
         </div>
     </div>
 
