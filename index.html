@@ -4,165 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Monitorización de Supervivencia</title>
+    
+    <!-- PWA Manifest & Theme Color -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2196F3">
+    <link rel="apple-touch-icon" href="icon.svg">
+    
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', Roboto, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            overflow: hidden;
-        }
-        #map {
-            width: 100vw;
-            height: 100vh;
-        }
-        .controls {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            gap: 15px;
-            background: rgba(30, 30, 30, 0.85);
-            padding: 15px 25px;
-            border-radius: 30px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .btn {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 20px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
-        .btn-location {
-            background: #2196F3;
-            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
-        }
-        .btn-location:hover {
-            background: #1e88e5;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        /* Popup custom styling */
-        .leaflet-popup-content-wrapper {
-            background: #1e1e1e;
-            color: #e0e0e0;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .leaflet-popup-tip {
-            background: #1e1e1e;
-        }
-        .popup-content h3 {
-            margin: 0 0 10px 0;
-            color: #4caf50;
-            font-size: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 5px;
-        }
-        .popup-content p {
-            margin: 5px 0;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        .popup-content strong {
-            color: #ffffff;
-        }
-        /* Custom markers */
-        .custom-user-icon-wrapper {
-            background: none;
-            border: none;
-        }
-        .user-marker {
-            width: 16px;
-            height: 16px;
-            background: #2196F3;
-            border: 3px solid white;
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(33, 150, 243, 0.8);
-            position: absolute;
-            top: 22px;
-            left: 22px;
-            z-index: 2;
-            animation: pulse 2s infinite;
-        }
-        .user-direction {
-            position: absolute;
-            width: 0; 
-            height: 0; 
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-bottom: 40px solid rgba(33, 150, 243, 0.5);
-            top: -10px;
-            left: 15px;
-            z-index: 1;
-            display: none;
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(33, 150, 243, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
-        }
-        .btn-location.inactive {
-            background: #607d8b;
-            box-shadow: 0 4px 15px rgba(96, 125, 139, 0.4);
-        }
-        #gps-status {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: rgba(30, 30, 30, 0.9);
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.1);
-            max-width: 90%;
-            text-align: center;
-        }
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ff9800; /* pending */
-        }
-        .status-dot.active { background: #4caf50; }
-        .status-dot.error { background: #f44336; }
-    </style>
+    
+    <!-- Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
+    <!-- GPS Status -->
     <div id="gps-status">
         <div class="status-dot" id="gps-dot"></div>
         <span id="gps-text">Buscando señal GPS...</span>
     </div>
+
+    <!-- Radar UI -->
+    <div id="radar-ui">
+        📍 A <span id="radar-dist">0</span> metros
+    </div>
+
     <div id="map"></div>
     
+    <!-- Main Controls -->
     <div class="controls">
         <label class="btn" for="csvFileInput">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
@@ -174,224 +46,57 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
             Centrar
         </button>
+
+        <button class="btn" id="btnExport" style="background:#ff9800;" title="Exportar CSV Auditado">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </button>
     </div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <!-- PapaParse for CSV parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
-    <script>
-        // Inicializar el mapa
-        const map = L.map('map', {
-            zoomControl: false
-        }).setView([38.285, -0.758], 15);
-
-        L.control.zoom({
-            position: 'topright'
-        }).addTo(map);
-
-        // Capa de satélite para máximo detalle (Esri World Imagery)
-        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-            maxZoom: 19
-        });
+    <!-- Bottom Sheet para Auditoría -->
+    <div id="bottom-sheet">
+        <div class="sheet-header">
+            <h3 id="sheet-title">Detalle Semilla</h3>
+            <button class="close-btn" id="btn-close-sheet">&times;</button>
+        </div>
         
-        satelliteLayer.addTo(map);
+        <div class="status-buttons">
+            <button class="btn-status btn-supervive" data-status="supervive">🌱 Supervive</button>
+            <button class="btn-status btn-germinada" data-status="germinada">🌿 Germinada</button>
+            <button class="btn-status btn-danada" data-status="danada">⚠️ Dañada</button>
+            <button class="btn-status btn-fallida" data-status="fallida">💀 Fallida</button>
+        </div>
+        
+        <div class="extra-inputs">
+            <input type="text" id="audit-note" class="note-input" placeholder="Notas (toca micro para dictar)..." />
+            <button class="icon-btn" id="btn-mic">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </button>
+            <button class="icon-btn" id="btn-camera">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            </button>
+            <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none;" />
+        </div>
+    </div>
 
-        let userMarker = null;
-        let userCircle = null;
-        let watchId = null;
-        let markersLayer = L.featureGroup().addTo(map);
-
-        // Icono para las siembras
-        const seedIcon = L.divIcon({
-            className: 'custom-div-icon',
-            html: `<div style="background-color:#4caf50;width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 0 5px rgba(0,0,0,0.5);"></div>`,
-            iconSize: [16, 16],
-            iconAnchor: [8, 8]
-        });
-
-        // Geolocalización en tiempo real
-        const gpsDot = document.getElementById('gps-dot');
-        const gpsText = document.getElementById('gps-text');
-        let isTracking = true;
-        let compassInitialized = false;
-
-        function updateGpsStatus(status, message) {
-            gpsDot.className = 'status-dot ' + status;
-            gpsText.innerText = message;
-        }
-
-        // Dejar de seguir si el usuario mueve el mapa manualmente
-        map.on('dragstart', () => {
-            isTracking = false;
-            document.getElementById('btnLocation').classList.add('inactive');
-        });
-
-        function initCompass() {
-            if (compassInitialized) return;
-
-            const handleOrientation = (e) => {
-                let heading = null;
-                if (e.webkitCompassHeading) {
-                    heading = e.webkitCompassHeading;
-                } else if (e.absolute && e.alpha !== null) {
-                    heading = 360 - e.alpha;
-                }
-
-                if (heading !== null) {
-                    const rotContainer = document.getElementById('user-rotation-container');
-                    const dirElement = document.getElementById('user-direction');
-                    if (rotContainer) {
-                        rotContainer.style.transform = `rotate(${heading}deg)`;
-                    }
-                    if (dirElement && dirElement.style.display !== 'block') {
-                        dirElement.style.display = 'block';
-                    }
-                }
-            };
-
-            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-                DeviceOrientationEvent.requestPermission()
-                    .then(permissionState => {
-                        if (permissionState === 'granted') {
-                            window.addEventListener('deviceorientation', handleOrientation);
-                            compassInitialized = true;
-                        }
-                    })
-                    .catch(console.error);
-            } else {
-                window.addEventListener('deviceorientationabsolute', handleOrientation);
-                window.addEventListener('deviceorientation', handleOrientation);
-                compassInitialized = true;
-            }
-        }
-
-        function startTracking() {
-            if (window.location.protocol === 'file:') {
-                updateGpsStatus('error', 'Error: Chrome Android bloquea el GPS al abrir archivos locales (file://). Usa un servidor web (ej. GitHub Pages).');
-                // Intentamos de todas formas, pero avisamos.
-            }
-
-            if ("geolocation" in navigator) {
-                updateGpsStatus('pending', 'Conectando con GPS...');
-                watchId = navigator.geolocation.watchPosition(
-                    (position) => {
-                        updateGpsStatus('active', `GPS Activo (Precisión: ±${Math.round(position.coords.accuracy)}m)`);
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        const accuracy = position.coords.accuracy;
-
-                        const userLatLng = [lat, lng];
-
-                        if (!userMarker) {
-                            const userIcon = L.divIcon({
-                                className: 'custom-user-icon-wrapper',
-                                html: `
-                                    <div id="user-rotation-container" style="width: 60px; height: 60px; position: relative; transition: transform 0.1s ease-out;">
-                                        <div class="user-direction" id="user-direction"></div>
-                                        <div class="user-marker"></div>
-                                    </div>
-                                `,
-                                iconSize: [60, 60],
-                                iconAnchor: [30, 30]
-                            });
-                            userMarker = L.marker(userLatLng, { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
-                            userCircle = L.circle(userLatLng, { radius: accuracy, color: '#2196F3', weight: 1, fillColor: '#2196F3', fillOpacity: 0.2 }).addTo(map);
-                            if (isTracking) {
-                                map.setView(userLatLng, 18);
-                            }
-                        } else {
-                            userMarker.setLatLng(userLatLng);
-                            userCircle.setLatLng(userLatLng);
-                            userCircle.setRadius(accuracy);
-                            if (isTracking) {
-                                map.setView(userLatLng, map.getZoom());
-                            }
-                        }
-                    },
-                    (error) => {
-                        console.error("Error obteniendo ubicación: ", error);
-                        let msg = 'Error GPS desconocido';
-                        if (error.code === 1) msg = 'Permiso GPS denegado. Revisa los permisos de Chrome.';
-                        if (error.code === 2) msg = 'Ubicación GPS no disponible.';
-                        if (error.code === 3) msg = 'Tiempo de espera agotado buscando GPS.';
-                        if (window.location.protocol === 'file:' && error.code === 1) {
-                            msg = 'Chrome bloquea el GPS en archivos descargados (file://). Súbelo a internet o usa Firefox.';
-                        }
-                        updateGpsStatus('error', msg);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        maximumAge: 0,
-                        timeout: 10000
-                    }
-                );
-            } else {
-                updateGpsStatus('error', 'Tu navegador no soporta geolocalización.');
-            }
-        }
-
-        document.getElementById('btnLocation').addEventListener('click', () => {
-            isTracking = true;
-            document.getElementById('btnLocation').classList.remove('inactive');
-            if (userMarker) {
-                map.setView(userMarker.getLatLng(), map.getZoom() < 18 ? 18 : map.getZoom());
-            } else {
-                startTracking();
-            }
-            initCompass();
-        });
-
-        // Iniciar rastreo al cargar
-        startTracking();
-
-        // Manejo de CSV
-        document.getElementById('csvFileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    markersLayer.clearLayers(); // Limpiar marcadores anteriores
-                    const data = results.data;
-                    
-                    data.forEach(row => {
-                        const lat = parseFloat(row['Lat']);
-                        const lng = parseFloat(row['Lng']);
-                        
-                        if (isNaN(lat) || isNaN(lng)) return;
-
-                        const popupContent = `
-                            <div class="popup-content">
-                                <h3>${row['Especie']}</h3>
-                                <p><strong>Equipo:</strong> ${row['Equipo']}</p>
-                                <p><strong>Micrositio:</strong> ${row['Micrositio']}</p>
-                                <p><strong>Orientación:</strong> ${row['Orientación']}</p>
-                                <p><strong>Semillas/Hoyo:</strong> ${row['Semillas/Hoyo']}</p>
-                                <p><strong>Protector:</strong> ${row['Protector']}</p>
-                                <p><strong>Sustrato:</strong> ${row['Sustrato']}</p>
-                                <p><strong>Golpes:</strong> ${row['Golpes']}</p>
-                                ${row['Notas'] ? `<p><strong>Notas:</strong> ${row['Notas']}</p>` : ''}
-                            </div>
-                        `;
-
-                        const marker = L.marker([lat, lng], { icon: seedIcon })
-                            .bindPopup(popupContent);
-                        
-                        markersLayer.addLayer(marker);
-                    });
-
-                    // Ajustar mapa para mostrar todos los puntos
-                    if (markersLayer.getLayers().length > 0) {
-                        map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
-                    }
-                }
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW registrado', reg))
+                    .catch(err => console.error('SW error', err));
             });
-        });
+        }
     </script>
+
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+
+    <!-- Custom Logic -->
+    <script src="js/store.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
