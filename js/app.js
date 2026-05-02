@@ -190,9 +190,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="detail-item"><strong>Equipo</strong> <span>${rowData['Equipo'] || '-'}</span></div>
             <div class="detail-item"><strong>Orientación</strong> <span>${rowData['Orientación'] || '-'}</span></div>
             <div class="detail-item"><strong>Sem/Hoyo</strong> <span>${rowData['Semillas/Hoyo'] || '-'}</span></div>
+            <div class="detail-item"><strong>Golpes</strong> <span>${rowData['Golpes'] || '-'}</span></div>
             <div class="detail-item"><strong>Protector</strong> <span>${rowData['Protector'] || '-'}</span></div>
             <div class="detail-item"><strong>Sustrato</strong> <span>${rowData['Sustrato'] || '-'}</span></div>
-            <div class="detail-item full-width"><strong>Notas Originales</strong> <span>${rowData['Notas'] || '-'}</span></div>
+            <div class="detail-item full-width" style="margin-top: 5px;"><strong>Notas Registradas</strong> <span>${rowData['Notas'] || '-'}</span></div>
         `;
 
         bottomSheet.classList.add('open');
