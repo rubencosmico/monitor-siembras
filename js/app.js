@@ -58,6 +58,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filterEstado = document.getElementById('filter-estado');
     const sheetDetails = document.getElementById('sheet-details');
 
+    // Photo Lightbox
+    const photoLightbox = document.getElementById('photo-lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const btnCloseLightbox = document.getElementById('btn-close-lightbox');
+
+    function openPhotoLightbox(url) {
+        lightboxImg.src = url;
+        photoLightbox.classList.add('open');
+    }
+
+    function closePhotoLightbox() {
+        photoLightbox.classList.remove('open');
+        lightboxImg.src = '';
+    }
+
+    btnCloseLightbox.addEventListener('click', closePhotoLightbox);
+    photoLightbox.addEventListener('click', (e) => {
+        if (e.target === photoLightbox) closePhotoLightbox();
+    });
+
     function updateGpsStatus(status, message) {
         gpsDot.className = 'status-dot ' + status;
         gpsText.innerText = message;
@@ -186,15 +206,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         selectedSeedId = seedId;
         sheetTitle.innerText = `${rowData['Especie']} - ${rowData['Micrositio']}`;
         
+        const photoUrl = (rowData['Foto URL'] || '').trim();
+        const photoHTML = photoUrl
+            ? `<div class="detail-photo-row">
+                   <img src="${photoUrl}" alt="Foto de siembra" class="seed-thumbnail" id="seed-thumbnail" loading="lazy" />
+               </div>`
+            : '';
+
         sheetDetails.innerHTML = `
-            <div class="detail-item"><strong>Equipo</strong> <span>${rowData['Equipo'] || '-'}</span></div>
-            <div class="detail-item"><strong>Orientación</strong> <span>${rowData['Orientación'] || '-'}</span></div>
-            <div class="detail-item"><strong>Sem/Hoyo</strong> <span>${rowData['Semillas/Hoyo'] || '-'}</span></div>
-            <div class="detail-item"><strong>Golpes</strong> <span>${rowData['Golpes'] || '-'}</span></div>
-            <div class="detail-item"><strong>Protector</strong> <span>${rowData['Protector'] || '-'}</span></div>
-            <div class="detail-item"><strong>Sustrato</strong> <span>${rowData['Sustrato'] || '-'}</span></div>
-            <div class="detail-item full-width" style="margin-top: 5px;"><strong>Notas Registradas</strong> <span>${rowData['Notas'] || '-'}</span></div>
+            ${photoHTML}
+            <div class="detail-grid">
+                <div class="detail-item"><strong>Equipo</strong> <span>${rowData['Equipo'] || '-'}</span></div>
+                <div class="detail-item"><strong>Orientación</strong> <span>${rowData['Orientación'] || '-'}</span></div>
+                <div class="detail-item"><strong>Sem/Hoyo</strong> <span>${rowData['Semillas/Hoyo'] || '-'}</span></div>
+                <div class="detail-item"><strong>Golpes</strong> <span>${rowData['Golpes'] || '-'}</span></div>
+                <div class="detail-item"><strong>Protector</strong> <span>${rowData['Protector'] || '-'}</span></div>
+                <div class="detail-item"><strong>Sustrato</strong> <span>${rowData['Sustrato'] || '-'}</span></div>
+                <div class="detail-item full-width" style="margin-top: 5px;"><strong>Notas Registradas</strong> <span>${rowData['Notas'] || '-'}</span></div>
+            </div>
         `;
+
+        if (photoUrl) {
+            document.getElementById('seed-thumbnail').addEventListener('click', () => openPhotoLightbox(photoUrl));
+        }
 
         bottomSheet.classList.add('open');
         

@@ -310,14 +310,23 @@ input[type="file"] {
 
 /* Sheet Details */
 .sheet-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
     background: #2a2a2a;
     padding: 15px;
     border-radius: 15px;
     margin-bottom: 5px;
     font-size: 13px;
+    max-height: 40vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
 }
 
 .detail-item {
@@ -334,3 +343,88 @@ input[type="file"] {
 .detail-item.full-width {
     grid-column: 1 / -1;
 }
+
+/* Photo Thumbnail */
+.detail-photo-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.seed-thumbnail {
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 10px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.seed-thumbnail:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+}
+
+.seed-thumbnail:active {
+    transform: scale(0.98);
+}
+
+/* Photo Lightbox */
+.lightbox-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 5000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: lightbox-fade-in 0.25s ease;
+}
+
+.lightbox-overlay.open {
+    display: flex;
+}
+
+@keyframes lightbox-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.lightbox-overlay img {
+    max-width: 95vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: max(20px, env(safe-area-inset-top, 20px));
+    right: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    font-size: 32px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: background 0.2s ease;
+    z-index: 1;
+}
+
+.lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
