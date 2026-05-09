@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analítico - Siembras</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    
+    <!-- Custom Dashboard CSS -->
+    <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+    <div class="dashboard-container">
+        
+        <!-- Sidebar: Filtros -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🌱 Arba Siembras</h2>
+                <p>Dashboard Analítico</p>
+                <a href="index.html" class="btn-back">← Volver a Monitor</a>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="filter-especie">Especie</label>
+                    <select id="filter-especie"><option value="all">Todas</option></select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-tratamiento">Tratamiento</label>
+                    <select id="filter-tratamiento"><option value="all">Todos</option></select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-micrositio">Micrositio</label>
+                    <select id="filter-micrositio"><option value="all">Todos</option></select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-orientacion">Orientación</label>
+                    <select id="filter-orientacion"><option value="all">Todas</option></select>
+                </div>
+
+                <button id="btn-reset-filters" class="btn-reset">Limpiar Filtros</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- KPIs -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon species">🌿</div>
+                    <div class="kpi-info">
+                        <span class="kpi-label">Especies Distintas</span>
+                        <span class="kpi-value" id="kpi-especies">0</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon holes">🎯</div>
+                    <div class="kpi-info">
+                        <span class="kpi-label">Golpes Registrados</span>
+                        <span class="kpi-value" id="kpi-golpes">0</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon seeds">🌰</div>
+                    <div class="kpi-info">
+                        <span class="kpi-label">Semillas Estimadas</span>
+                        <span class="kpi-value" id="kpi-semillas">0</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon records">📝</div>
+                    <div class="kpi-info">
+                        <span class="kpi-label">Registros Totales</span>
+                        <span class="kpi-value" id="kpi-registros">0</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts & Map -->
+            <section class="charts-grid">
+                <div class="chart-card species-chart">
+                    <h3>Distribución de Especies</h3>
+                    <div class="chart-container">
+                        <canvas id="chartEspecies"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card map-card">
+                    <h3>Mapa de Siembras</h3>
+                    <div id="dashboard-map"></div>
+                </div>
+
+                <div class="chart-card treatment-chart">
+                    <h3>Tratamientos Aplicados</h3>
+                    <div class="chart-container">
+                        <canvas id="chartTratamientos"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card microsite-chart">
+                    <h3>Micrositios y Estrategias</h3>
+                    <div class="chart-container">
+                        <canvas id="chartMicrositios"></canvas>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Logic -->
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
