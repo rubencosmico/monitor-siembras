@@ -19,38 +19,44 @@
 <body>
     <div class="dashboard-container">
         
-        <!-- Sidebar: Filtros -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>🌱 Arba Siembras</h2>
-                <p>Dashboard Analítico</p>
-                <a href="index.html" class="btn-back">← Volver a Monitor</a>
+        <!-- Top Bar: Filtros Horizontales -->
+        <header class="top-bar">
+            <div class="brand">
+                <a href="index.html" class="btn-back-small" title="Volver al Monitor">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </a>
+                <div class="brand-text">
+                    <h1>🌱 Arba Siembras</h1>
+                    <p>Dashboard Analítico</p>
+                </div>
             </div>
 
-            <div class="filters">
-                <div class="filter-group">
+            <div class="horizontal-filters">
+                <div class="filter-item">
                     <label for="filter-especie">Especie</label>
                     <select id="filter-especie"><option value="all">Todas</option></select>
                 </div>
 
-                <div class="filter-group">
+                <div class="filter-item">
                     <label for="filter-tratamiento">Tratamiento</label>
                     <select id="filter-tratamiento"><option value="all">Todos</option></select>
                 </div>
 
-                <div class="filter-group">
+                <div class="filter-item">
                     <label for="filter-micrositio">Micrositio</label>
                     <select id="filter-micrositio"><option value="all">Todos</option></select>
                 </div>
 
-                <div class="filter-group">
+                <div class="filter-item">
                     <label for="filter-orientacion">Orientación</label>
                     <select id="filter-orientacion"><option value="all">Todas</option></select>
                 </div>
 
-                <button id="btn-reset-filters" class="btn-reset">Limpiar Filtros</button>
+                <button id="btn-reset-filters" class="btn-reset-small" title="Limpiar Filtros">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+                </button>
             </div>
-        </aside>
+        </header>
 
         <!-- Main Content -->
         <main class="main-content">
@@ -60,28 +66,28 @@
                 <div class="kpi-card">
                     <div class="kpi-icon species">🌿</div>
                     <div class="kpi-info">
-                        <span class="kpi-label">Especies Distintas</span>
+                        <span class="kpi-label">Especies</span>
                         <span class="kpi-value" id="kpi-especies">0</span>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon holes">🎯</div>
                     <div class="kpi-info">
-                        <span class="kpi-label">Golpes Registrados</span>
+                        <span class="kpi-label">Golpes</span>
                         <span class="kpi-value" id="kpi-golpes">0</span>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon seeds">🌰</div>
                     <div class="kpi-info">
-                        <span class="kpi-label">Semillas Estimadas</span>
+                        <span class="kpi-label">Semillas</span>
                         <span class="kpi-value" id="kpi-semillas">0</span>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon records">📝</div>
                     <div class="kpi-info">
-                        <span class="kpi-label">Registros Totales</span>
+                        <span class="kpi-label">Registros</span>
                         <span class="kpi-value" id="kpi-registros">0</span>
                     </div>
                 </div>
@@ -102,22 +108,59 @@
                 </div>
 
                 <div class="chart-card treatment-chart">
-                    <h3>Tratamientos Aplicados</h3>
+                    <h3>Tratamientos</h3>
                     <div class="chart-container">
                         <canvas id="chartTratamientos"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-card microsite-chart">
-                    <h3>Micrositios y Estrategias</h3>
+                    <h3>Micrositios</h3>
                     <div class="chart-container">
                         <canvas id="chartMicrositios"></canvas>
                     </div>
                 </div>
             </section>
 
+            <!-- Table Section -->
+            <section class="table-card">
+                <div class="table-header">
+                    <h3>Listado de Golpes</h3>
+                    <div class="pagination-controls" id="pagination-top">
+                        <!-- Pagination will be injected here -->
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Especie</th>
+                                <th>Golpes</th>
+                                <th>Tratamiento</th>
+                                <th>Micrositio</th>
+                                <th>Equipo</th>
+                                <th>Foto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Data rows will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="pagination-info" id="pagination-info">
+                        Mostrando registros del 1 al 25
+                    </div>
+                    <div class="pagination-controls" id="pagination-bottom">
+                        <!-- Pagination will be injected here -->
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
+
 
     <!-- External Libraries -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>

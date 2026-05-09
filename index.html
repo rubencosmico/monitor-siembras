@@ -19,6 +19,38 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css" />
+    <style>
+        .floating-dashboard-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            color: #2a9d8f;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #2a9d8f;
+        }
+        .floating-dashboard-link:hover {
+            transform: scale(1.1) rotate(5deg);
+            background: #2a9d8f;
+            color: white;
+        }
+        @media (max-width: 600px) {
+            .floating-dashboard-link {
+                top: auto;
+                bottom: 100px; /* Above the main controls */
+                right: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- GPS Status -->
@@ -55,8 +87,9 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         </button>
 
-        <a href="dashboard.html" class="btn" style="background:#2a9d8f; text-decoration:none; display:flex; align-items:center; justify-content:center;" title="Dashboard Analítico">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        <!-- Dashboard link moved to top-right corner -->
+        <a href="dashboard.html" class="floating-dashboard-link" title="Dashboard Analítico">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
         </a>
     </div>
 
