@@ -40,10 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Carga de datos
     async function loadData() {
         try {
-            const response = await fetch('data/datos_consolidados.json');
-            if (!response.ok) throw new Error('Network response was not ok');
-            const data = await response.json();
+            // Obtenemos los datos desde el archivo .js local para evitar problemas de CORS
+            const data = window.datosConsolidados;
             
+            if (!data) throw new Error('Los datos no se han cargado correctamente.');
+
             // Clean specific data if needed
             state.allData = data.map(row => ({
                 ...row,
@@ -54,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.filteredData = [...state.allData];
         } catch (error) {
             console.error('Error loading data:', error);
-            alert('No se pudieron cargar los datos de siembra. Verifica que el archivo JSON exista.');
+            alert('No se pudieron cargar los datos de siembra. Verifica que el archivo JSON/JS exista.');
         }
     }
 
