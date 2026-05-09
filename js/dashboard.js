@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadData() {
         try {
             // Obtenemos los datos desde el archivo .js local para evitar problemas de CORS
-            const data = window.datosConsolidados;
+            const data = typeof datosConsolidados !== 'undefined' ? datosConsolidados : null;
             
             if (!data) throw new Error('Los datos no se han cargado correctamente.');
 
