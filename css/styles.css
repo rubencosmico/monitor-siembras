@@ -16,18 +16,21 @@ body {
 /* Controls */
 .controls {
     position: absolute;
-    bottom: 30px;
+    bottom: 25px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
     display: flex;
-    gap: 15px;
-    background: rgba(30, 30, 30, 0.85);
-    padding: 15px 25px;
-    border-radius: 30px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 10px;
+    background: rgba(30, 30, 30, 0.9);
+    padding: 10px 15px;
+    border-radius: 35px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    max-width: 95vw;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .btn {
@@ -162,6 +165,20 @@ input[type="file"] {
     bottom: 0;
 }
 
+#bottom-sheet.minimized {
+    bottom: calc(-100% + 70px); /* Only show header */
+}
+
+#bottom-sheet.minimized .sheet-details,
+#bottom-sheet.minimized .status-buttons,
+#bottom-sheet.minimized .extra-inputs {
+    display: none;
+}
+
+#bottom-sheet.minimized #btn-minimize-sheet svg {
+    transform: rotate(180deg);
+}
+
 .sheet-header {
     display: flex;
     justify-content: space-between;
@@ -176,12 +193,20 @@ input[type="file"] {
     font-size: 18px;
 }
 
-.close-btn {
+.close-btn, .icon-btn-small {
     background: none;
     border: none;
     color: #aaa;
     font-size: 24px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn-small {
+    color: #4caf50;
+    padding: 5px;
 }
 
 .status-buttons {
@@ -243,13 +268,32 @@ input[type="file"] {
     top: 70px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(33, 150, 243, 0.9);
-    padding: 8px 15px;
-    border-radius: 20px;
+    background: rgba(33, 150, 243, 0.95);
+    padding: 10px 18px;
+    border-radius: 25px;
     z-index: 1000;
     font-weight: bold;
     display: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.2);
+    align-items: center;
+    gap: 10px;
+}
+
+.radar-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 5px;
 }
 
 /* Marker Colors */
@@ -428,3 +472,24 @@ input[type="file"] {
     background: rgba(255, 255, 255, 0.3);
 }
 
+
+@media (max-width: 450px) {
+    .controls .btn span {
+        display: none;
+    }
+    .controls {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+    .btn {
+        padding: 10px;
+        border-radius: 50%;
+    }
+    .btn svg {
+        margin: 0;
+    }
+    
+    #bottom-sheet {
+        padding: 15px;
+    }
+}

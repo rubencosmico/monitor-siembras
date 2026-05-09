@@ -57,6 +57,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filterEquipo = document.getElementById('filter-equipo');
     const filterEstado = document.getElementById('filter-estado');
     const sheetDetails = document.getElementById('sheet-details');
+    const btnMinimizeSheet = document.getElementById('btn-minimize-sheet');
+    const btnClearRadar = document.getElementById('btn-clear-radar');
 
     // Photo Lightbox
     const photoLightbox = document.getElementById('photo-lightbox');
@@ -139,7 +141,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (radarPolyline) {
                 radarPolyline.setLatLngs([userLatLng, targetLatLng]);
             } else {
-                radarPolyline = L.polyline([userLatLng, targetLatLng], { color: '#ffeb3b', weight: 3, dashArray: '5, 10' }).addTo(map);
+                radarPolyline = L.polyline([userLatLng, targetLatLng], { 
+                    color: '#ffeb3b', 
+                    weight: 3, 
+                    dashArray: '5, 10',
+                    interactive: false 
+                }).addTo(map);
             }
 
             // Haptic feedback if close
@@ -170,7 +177,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                             iconSize: [60, 60],
                             iconAnchor: [30, 30]
                         });
-                        userMarker = L.marker(userLatLng, { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
+                        userMarker = L.marker(userLatLng, { 
+                            icon: userIcon, 
+                            zIndexOffset: 0, // Lower than seeds
+                            interactive: false // Clicks pass through
+                        }).addTo(map);
                         userCircle = L.circle(userLatLng, { radius: accuracy, color: '#2196F3', weight: 1, fillColor: '#2196F3', fillOpacity: 0.2 }).addTo(map);
                         if (isTracking) map.setView(userLatLng, 18);
                     } else {
@@ -230,6 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('seed-thumbnail').addEventListener('click', () => openPhotoLightbox(photoUrl));
         }
 
+        bottomSheet.classList.remove('minimized');
         bottomSheet.classList.add('open');
         
         // Reset inputs
@@ -243,6 +255,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     btnCloseSheet.addEventListener('click', () => {
         bottomSheet.classList.remove('open');
+        bottomSheet.classList.remove('minimized');
+        // NOT clearing selectedSeedId here to keep radar active
+    });
+
+    btnMinimizeSheet.addEventListener('click', () => {
+        bottomSheet.classList.toggle('minimized');
+    });
+
+    btnClearRadar.addEventListener('click', () => {
         selectedSeedId = null;
         updateRadar();
     });
@@ -374,7 +395,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 iconAnchor: [8, 8]
             });
 
-            const marker = L.marker([lat, lng], { icon: icon, seedId: seedId });
+            const marker = L.marker([lat, lng], { 
+                icon: icon, 
+                seedId: seedId,
+                zIndexOffset: 1000 // Higher than user
+            });
             marker.on('click', () => {
                 openBottomSheet(seedId, row, audit);
             });
